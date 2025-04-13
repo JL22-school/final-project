@@ -269,3 +269,99 @@ app.delete('/meals/:id', (req, res) => {
     res.json({ message: 'Meal deleted' });
   });
 });
+
+// /register route code
+const bcrypt = require('bcrypt');
+const sqlite3 = require('sqlite3').verbose();
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
+app.use(cors());
+app.use(bodyParser.json());
+// Register
+app.post('/register', async (req, res) => {
+  const { username, password } = req.body;
+  //check username and password
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+
+  db.get('SELECT * FROM users WHERE username = ?', [username], async (err, user) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database error while checking username' });
+    }
+    if (user) {
+      return res.status(400).json({ error: 'Username already taken' });
+    }
+
+    try {
+      //hash password with bcrypt
+      const hashedPassword = await bcrypt.hash(password, 10);
+      // insert user into database
+      db.run(
+        'INSERT INTO users (username, password) VALUES (?, ?)',
+        [username, hashedPassword],
+        function (err) {
+          if (err) {
+            return res.status(500).json({ error: 'Failed to register user' });
+          }
+          res.status(201).json({ message: 'User registered successfully', userId: this.lastID });
+        }
+      );
+    } catch (error) {
+      res.status(500).json({ error: 'Error while hashing the password' });
+    }
+  });
+});
+
+// Login route
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  // Check missing fields
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+
+  // look up user in DB
+  db.get('SELECT * FROM users WHERE username = ?', [username], async (err, user) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database error while retrieving user' });
+    }
+    // error message if not found
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+    try {
+      // password comparison
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (passwordMatch) {
+        // successful login
+        res.status(200).json({ message: 'Login successful', userId: user.id });
+      } else {
+        // password mismatch
+        res.status(401).json({ error: 'Invalid username or password' });
+      }
+    } catch (error) {
+      // error while comparing passwords
+      res.status(500).json({ error: 'Error while comparing passwords' });
+    }
+  });
+});
+//protection and authorization
+app.get('/protected', (req, res) => {
+  const userId = req.headers['x-user-id']; // Check for userId in the headers
+  const authHeader = req.headers['authorization']; // Check for authorization token
+  
+  // If userId is provided, treat as valid request
+  if (userId) {
+    return res.status(200).json({ message: 'Access granted to protected resource', userId });
+  }
+  
+  // If authorization token is provided, treat as valid request
+  if (authHeader && authHeader === 'Bearer mysecrettoken') {
+    return res.status(200).json({ message: 'Access granted to protected resource' });
+  }
+  
+  // If neither is provided, return an unauthorized error
+  return res.status(401).json({ error: 'Unauthorized: No valid authentication method provided' });
+});
