@@ -1,7 +1,9 @@
 const express = require('express');
 const db = require('./db/database');
 const app = express();
+const cors = require('cors');
 
+app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
@@ -274,9 +276,7 @@ app.delete('/meals/:id', (req, res) => {
 const bcrypt = require('bcrypt');
 const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
-const cors = require('cors');
 
-app.use(cors());
 app.use(bodyParser.json());
 // Register
 app.post('/register', async (req, res) => {

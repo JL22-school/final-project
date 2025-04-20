@@ -1,0 +1,75 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .progress-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .progress-container h2 {
+    text-align: center;
+    color: #333333;
+  }
+  
+  .progress-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .progress-container label {
+    font-weight: bold;
+    color: #555555;
+  }
+  
+  .progress-container input {
+    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .progress-container button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .progress-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  .progress-container p {
+    text-align: center;
+    color: #ff0000;
+    font-weight: bold;
+  }
+  
+  .return-button {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #6c757d;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .return-button:hover {
+    background-color: #5a6268;
+  }
